@@ -14,7 +14,7 @@ const { connect } = require("socket.io-client");
       const branch = await getBranch();
 
       const io = connect("http://office.choicesaas.cn/choicefe");
-      io.emit("update", `${outs[outs.length - 1]}#${info}#${branch}`);
+      io.emit("update", `${outs[outs.length - 1]}#${info}#分支:${branch}`);
       io.close();
     } else {
       outs.push(data);
@@ -24,7 +24,7 @@ const { connect } = require("socket.io-client");
 
 async function getGitInfo() {
   return new Promise((resolve) => {
-    const cp = exec(`git log --pretty=format:"%an 更新内容:%s" -1`);
+    const cp = exec(`git log --pretty=format:"作者:%an 更新内容:%s" -1`);
     cp.stdout.on("data", (data) => {
       resolve(data);
     });
