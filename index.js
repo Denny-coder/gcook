@@ -24,7 +24,7 @@ const { connect } = require("socket.io-client");
 
 async function getGitInfo() {
   return new Promise((resolve) => {
-    const cp = exec(`git log --pretty=format:"%an %s" -1`);
+    const cp = exec(`git log --pretty=format:"%an 更新内容:%s" -1`);
     cp.stdout.on("data", (data) => {
       resolve(data);
     });
