@@ -5,9 +5,9 @@ const { connect } = require("socket.io-client");
 (async function cook() {
   const outs = [];
 
-  const command = process.argv.slice(2).join(" ").replace("g", "");
+  const command = process.argv.slice(2);
 
-  const cp = exec(command);
+  const cp = exec(`cd ${process.cwd()} && cook ${command}`);
   cp.stdout.on("data", async (data) => {
     if (data === "发布完成") {
       const name = await getGitUserName();
