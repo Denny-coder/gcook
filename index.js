@@ -14,8 +14,10 @@ const { connect } = require("socket.io-client");
       // const branch = await getBranch();
 
       const io = connect("http://office.choicesaas.cn/choicefe");
-      io.emit("update", `${name}#${outs[outs.length - 1]}`);
-      io.close();
+      io.emit("update", `${name} #${outs[outs.length - 1]}`);
+      setTimeout(() => {
+        io.close();
+      }, 1000);
     } else {
       outs.push(data);
     }
