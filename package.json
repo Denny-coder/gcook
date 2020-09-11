@@ -1,8 +1,9 @@
 {
   "name": "gcook",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "cook替代",
   "main": "index.js",
+  "repository": "https://github.com/fanzkday/gcook.git",
   "scripts": {},
   "bin": {
     "gcook": "./index.js"
