@@ -8,20 +8,21 @@ const { connect } = require("socket.io-client");
   const command = process.argv.slice(2);
 
   const cp = exec(`cd ${process.cwd()} && cook ${command}`);
-  cp.stdout.on("data", async (data) => {
-    if (data === "发布完成") {
-      const name = await getGitUserName();
-      // const branch = await getBranch();
 
-      const io = connect("http://office.choicesaas.cn/choicefe");
-      io.emit("update", `${name} #${outs[outs.length - 1]}`);
-      setTimeout(() => {
-        io.close();
-      }, 1000);
-    } else {
-      outs.push(data);
-    }
+  cp.stdout.on("data", (data) => {
+    outs.push(data);
     console.log(data);
+  });
+
+  cp.stdout.on("end", async () => {
+    const name = await getGitUserName();
+
+    const io = connect("http://office.choicesaas.cn/choicefe");
+    io.emit("update", `${name} #${outs[outs.length - 2]}`);
+
+    setTimeout(() => {
+      io.close();
+    }, 1000);
   });
 })();
 
