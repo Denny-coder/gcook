@@ -10,21 +10,23 @@ const { connect } = require("socket.io-client");
   const cp = exec(command);
   cp.stdout.on("data", async (data) => {
     if (data === "发布完成") {
-      const info = await getGitInfo();
-      const branch = await getBranch();
+      const name = await getGitUserName();
+      // const branch = await getBranch();
 
       const io = connect("http://office.choicesaas.cn/choicefe");
-      io.emit("update", `${outs[outs.length - 1]}#${info}#分支:${branch}`);
+      io.emit("update", `${name}#${outs[outs.length - 1]}`);
       io.close();
     } else {
       outs.push(data);
     }
+    console.log(data);
   });
 })();
 
-async function getGitInfo() {
+async function getGitUserName() {
   return new Promise((resolve) => {
-    const cp = exec(`git log --pretty=format:"作者:%an 更新内容:%s" -1`);
+    // const cp = exec(`git log --pretty=format:"作者:%an 更新内容:%s" -1`);
+    const cp = exec(`git config user.name`);
     cp.stdout.on("data", (data) => {
       resolve(data);
     });
