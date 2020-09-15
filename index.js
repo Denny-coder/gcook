@@ -15,6 +15,9 @@ const { connect } = require("socket.io-client");
   });
 
   cp.stdout.on("end", async () => {
+    if (outs[outs.length - 1].indexOf("发布成功") === -1) {
+      return;
+    }
     const info = await getGitInfo();
     const branch = await getBranch();
     const [author, commit] = info.split("#");
