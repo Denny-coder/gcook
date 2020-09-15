@@ -15,10 +15,15 @@ const { connect } = require("socket.io-client");
   });
 
   cp.stdout.on("end", async () => {
-    const name = await getGitUserName();
+    const info = await getGitInfo();
+    const branch = await getBranch();
+    const [author, commit] = info.split("#");
+
+    const out = outs[outs.length - 2];
+    const [name, version] = out.replace("+ ", "").split(/@(?=\d)/);
 
     const io = connect("http://office.choicesaas.cn/choicefe");
-    io.emit("update", `${name} #${outs[outs.length - 2]}`);
+    io.emit("update", `${author}#${name}#${version}#${branch}#${commit}`);
 
     setTimeout(() => {
       io.close();
@@ -26,10 +31,9 @@ const { connect } = require("socket.io-client");
   });
 })();
 
-async function getGitUserName() {
+async function getGitInfo() {
   return new Promise((resolve) => {
-    // const cp = exec(`git log --pretty=format:"作者:%an 更新内容:%s" -1`);
-    const cp = exec(`git config user.name`);
+    const cp = exec(`git log --pretty=format:"%an#%s" -1`);
     cp.stdout.on("data", (data) => {
       resolve(data);
     });
