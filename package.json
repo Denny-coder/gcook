@@ -1,12 +1,12 @@
 {
   "name": "gcook",
-  "version": "1.2.0",
+  "version": "1.2.6",
   "description": "cook替代",
   "main": "index.js",
   "repository": "https://github.com/fanzkday/gcook.git",
   "scripts": {},
   "bin": {
-    "gcook": "./index.js"
+    "gcook": "./start.js"
   },
   "author": "fanzkday",
   "license": "ISC",
