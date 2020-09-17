@@ -6,12 +6,9 @@ const { connect } = require("socket.io-client");
   const latest = await getLatestVersion();
   const local = getLocalVersion();
 
-  console.log("Latest Version: ", latest);
-  console.log("Local Version: ", local);
   if (latest !== local) {
-    console.log("Installing latest version...");
-    updateToLatestVersion();
-    return;
+    console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
+    process.exit(0);
   }
 
   const outs = [];
@@ -79,11 +76,4 @@ async function getLatestVersion() {
 
 function getLocalVersion() {
   return require("./package.json").version;
-}
-
-async function updateToLatestVersion() {
-  const cp = exec("npm install -g gcook@latest --registry=http://registry.npmjs.org");
-  cp.stdout.on("end", () => {
-    process.send("restart");
-  });
 }
