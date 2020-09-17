@@ -5,6 +5,12 @@ const { connect } = require("socket.io-client");
 const command = process.argv.slice(2);
 
 (async function cook() {
+  const hasChanges = await hasCodeChanges();
+  if (hasChanges) {
+    console.log("Please git commit your changes!");
+    return;
+  }
+
   const latest = await getLatestVersion();
   const local = getLocalVersion();
 
@@ -87,5 +93,19 @@ async function updateToLatestVersion() {
   });
   cp.stdout.on("end", () => {
     //
+  });
+}
+
+async function hasCodeChanges() {
+  return new Promise((resolve) => {
+    exec("git status", (error, stdout) => {
+      if (!error) {
+        if (stdout.includes("Changes not staged for commit") || stdout.includes("Changes to be committed")) {
+          resolve(true);
+        }
+        resolve(false);
+      }
+      resolve(true);
+    });
   });
 }
