@@ -8,7 +8,6 @@ const command = process.argv.slice(2);
   const latest = await getLatestVersion();
   const local = getLocalVersion();
 
-  console.log("Local Version:", local);
   if (latest !== local) {
     console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
     updateToLatestVersion();
@@ -81,6 +80,7 @@ function getLocalVersion() {
 }
 
 async function updateToLatestVersion() {
+  console.log("Use Latest Version Installing...");
   const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
   cp.stdout.on("data", (data) => {
     console.log(data);
