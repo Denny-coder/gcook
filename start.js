@@ -2,18 +2,20 @@
 const { exec } = require("child_process");
 const { connect } = require("socket.io-client");
 
+const command = process.argv.slice(2);
+
 (async function cook() {
   const latest = await getLatestVersion();
   const local = getLocalVersion();
 
+  console.log("Local Version:", local);
   if (latest !== local) {
     console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
-    process.exit(0);
+    updateToLatestVersion();
+    return;
   }
 
   const outs = [];
-
-  const command = process.argv.slice(2);
 
   const cp = exec(`cd ${process.cwd()} && cook ${command}`);
 
@@ -76,4 +78,14 @@ async function getLatestVersion() {
 
 function getLocalVersion() {
   return require("./package.json").version;
+}
+
+async function updateToLatestVersion() {
+  const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
+  cp.stdout.on("data", (data) => {
+    console.log(data);
+  });
+  cp.stdout.on("end", () => {
+    //
+  });
 }
