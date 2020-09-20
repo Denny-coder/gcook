@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Denny-coder/cookPublishTool/issues"
   },
-  "homepage": "https://github.com/Denny-coder/cookPublishTool#readme"
+  "homepage": "https://github.com/Denny-coder/cookPublishTool#readme",
+  "dependencies": {
+    "commander": "^6.1.0"
+  }
 }
