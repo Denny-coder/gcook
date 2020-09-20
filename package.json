@@ -1,0 +1,26 @@
+{
+  "name": "cookpublishtool",
+  "version": "1.0.0",
+  "description": "cook组件批量发布工具",
+  "main": "index.js",
+  "scripts": {
+    "test": "ckp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Denny-coder/cookPublishTool.git"
+  },
+  "keywords": [
+    "cook",
+    "publish"
+  ],
+  "bin": {
+    "ckp": "main.js"
+  },
+  "author": "zke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Denny-coder/cookPublishTool/issues"
+  },
+  "homepage": "https://github.com/Denny-coder/cookPublishTool#readme"
+}
