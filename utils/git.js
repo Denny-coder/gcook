@@ -1,10 +1,23 @@
 const { exec } = require("child_process");
 
-module.exports.add = async function (path, version) {
-  console.log(version);
+module.exports.commit = async function (path, version) {
   return new Promise((resolve) => {
     exec(
       `cd ${path} && git add ./package.json && git commit -m 上线封版${version}`,
+      (error, stdout) => {
+        if (error) {
+          resolve(false);
+        }
+        resolve(true);
+      }
+    );
+  });
+};
+module.exports.diff = async function (path, branch) {
+  console.log(branch);
+  return new Promise((resolve) => {
+    exec(
+      `cd ${path} && git diff ${branch}..origin/${branch}`,
       (error, stdout) => {
         console.log(error, stdout);
         if (error) {
