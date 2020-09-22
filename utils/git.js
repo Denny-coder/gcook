@@ -1,5 +1,20 @@
 const { exec } = require("child_process");
 
+module.exports.add = async function (path, version) {
+  console.log(version);
+  return new Promise((resolve) => {
+    exec(
+      `cd ${path} && git add ./package.json && git commit -m 上线封版${version}`,
+      (error, stdout) => {
+        console.log(error, stdout);
+        if (error) {
+          resolve(false);
+        }
+        resolve(true);
+      }
+    );
+  });
+};
 module.exports.hasCodeChanges = async function (path) {
   return new Promise((resolve) => {
     exec(`cd ${path} && git status`, (error, stdout) => {
