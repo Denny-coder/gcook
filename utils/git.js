@@ -14,13 +14,12 @@ module.exports.commit = async function (path, version) {
   });
 };
 module.exports.diff = async function (path, branch) {
-  console.log(branch);
   return new Promise((resolve) => {
     exec(
       `cd ${path} && git diff ${branch}..origin/${branch}`,
       (error, stdout) => {
-        console.log(error, stdout);
-        if (error) {
+        console.log(`cd ${path} && git diff ${branch}..origin/${branch}`);
+        if (error || stdout) {
           resolve(false);
         }
         resolve(true);
@@ -52,7 +51,7 @@ module.exports.getBranchName = async function (path) {
         if (error) {
           reject(error);
         }
-        resolve(stdout);
+        resolve(stdout.replace(/(\r|\n)/g, ""));
       }
     );
   });
