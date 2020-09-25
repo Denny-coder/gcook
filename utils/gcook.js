@@ -14,7 +14,6 @@ module.exports.getLocalVersion = function () {
 };
 
 module.exports.updateToLatestVersion = async function () {
-  console.log("Use Latest Version Installing...");
   const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
   cp.stdout.on("data", (data) => {
     console.log(data);
@@ -23,10 +22,10 @@ module.exports.updateToLatestVersion = async function () {
     //
   });
 };
-module.exports.publish = async function (path, command) {
-  console.log("Use Latest Version Installing...");
+module.exports.publish = async function (path, command,name) {
   return new Promise((resolve) => {
     exec(`cd ${path} && gcook ${command}`, (error, stdout) => {
+      console.log(name,error, stdout)
       if (error) {
         resolve(false);
       }

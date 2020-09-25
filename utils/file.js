@@ -2,7 +2,6 @@ var fs = require("fs");
 const { exec } = require("child_process");
 
 module.exports.read = (path) => {
-  console.log(path);
   var _packageJson = fs.readFileSync(path);
   return JSON.parse(_packageJson);
 };
