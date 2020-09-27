@@ -22,7 +22,8 @@ if (!msgFunc.configCheck(configArray)) {
 }
 Promise.all(configArray.map((config) => batchPublish(config)))
   .then((res) => {
-    console.log("发布完成");
+    console.table(res);
+    console.log("程序执行结束");
   })
   .catch((error) => {
     console.log("error", error);
@@ -45,7 +46,10 @@ function batchPublish(config) {
           config.name,
           `请push 或 pull ${config.branch} 分支`
         );
-        return resolve("Please git commit your changes!");
+        return resolve({
+          name: config.name,
+          msg: `Please git commit your changes!`,
+        });
       }
       msgFunc.successMsgPush(
         "hasChanges",
@@ -64,7 +68,10 @@ function batchPublish(config) {
           config.name,
           `${config.version}已存在`
         );
-        return resolve(`${config.name} ${config.version} 版本已存在`);
+        return resolve({
+          name: config.name,
+          msg: `${config.version} 版本已存在`,
+        });
       }
       msgFunc.successMsgPush(
         "resultVersions",
@@ -73,52 +80,75 @@ function batchPublish(config) {
       );
       // 判断远端库是否有修改，如果有修改需要手动git pull
       const noChange = await git.diff(config.filePath, config.branch);
-      // if (noChange) {
-      //   // 写入目标版本号，准备执行git commit
-      //   package.version = config.version;
-      //   const writeFlag = await file.write(
-      //     `${config.filePath}/package.json`,
-      //     JSON.stringify(package, "", "\t")
-      //   );
-      //   msgFunc.green("4");
-      //   // 写入完成
-      //   if (writeFlag) {
-      //     msgFunc.green("5");
-      //     const commitFlag = await git.commit(config.filePath, config.version);
-      //     msgFunc.green("6");
-      //     // git commit 完成准备publish
-      //     if (commitFlag) {
-      //       msgFunc.green("7");
-      //       const command =
-      //         config.version.indexOf("beta") > -1 ? "beta" : "publish";
-      //       msgFunc.green("8");
-      //       const publishFlag = await gcook.publish(
-      //         config.filePath,
-      //         command,
-      //         config.name
-      //       );
-      //       msgFunc.green("9");
-      //       if (publishFlag) {
-      //         resolve(`${config.name} 发布完成，请及时合并至master`);
-      //       }
-      //     } else {
-      //       resolve(`${config.name} git commit 执行失败`);
-      //     }
-      //   } else {
-      //     resolve(`${config.name} package.json写入失败`);
-      //   }
-      // } else {
-      //   resolve(`${config.name} 请更新本地代码`);
-      // }
+      if (noChange) {
+        msgFunc.successMsgPush("diff", config.name, `本地代码无需更新`);
+        // 写入目标版本号，准备执行git commit
+        package.version = config.version;
+        const writeFlag = await file.write(
+          `${config.filePath}/package.json`,
+          JSON.stringify(package, "", "\t")
+        );
+        // 写入完成
+        if (writeFlag) {
+          msgFunc.successMsgPush("write", config.name, `version写入完成`);
+          const commitFlag = await git.commit(config.filePath, config.version);
+          // git commit 完成准备publish
+          if (commitFlag) {
+            msgFunc.successMsgPush(
+              "commit",
+              config.name,
+              `git add & git commit 执行成功`
+            );
+            // const command =
+            //   config.version.indexOf("beta") > -1 ? "beta" : "publish";
+            // msgFunc.green("8");
+            // const publishFlag = await gcook.publish(
+            //   config.filePath,
+            //   command,
+            //   config.name
+            // );
+            // msgFunc.green("9");
+            // if (publishFlag) {
+            // resolve({
+            //   name: config.name,
+            //   msg: `发布完成，请及时合并至master`,
+            // });
+            // }
+          } else {
+            msgFunc.errorMsgPush(
+              "commit",
+              config.name,
+              `git add & git commit 执行失败`
+            );
+            resolve({
+              name: config.name,
+              msg: `package.git commit 执行失败`,
+            });
+          }
+        } else {
+          msgFunc.errorMsgPush("write", config.name, `version写入失败`);
+          resolve({
+            name: config.name,
+            msg: `package.json写入失败`,
+          });
+        }
+      } else {
+        msgFunc.successMsgPush("diff", config.name, `请更新本地代码`);
+        resolve({
+          name: config.name,
+          msg: `请更新本地代码`,
+        });
+      }
     } else {
       msgFunc.errorMsgPush(
         "branchChekc",
         config.name,
         `当前分支不正确，请切换至${config.branch}`
       );
-      resolve(
-        `${config.name} 当前分支:${branchName} 目标分支:${config.branch}`
-      );
+      resolve({
+        name: config.name,
+        msg: `当前分支:${branchName} 目标分支:${config.branch}`,
+      });
     }
   });
 }

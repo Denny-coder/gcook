@@ -18,7 +18,7 @@ module.exports.diff = async function (path, branch) {
     exec(
       `cd ${path} && git diff ${branch}..origin/${branch}`,
       (error, stdout) => {
-        console.log(`cd ${path} && git diff ${branch}..origin/${branch}`);
+        // console.log(`cd ${path} && git diff ${branch}..origin/${branch}`);
         if (error || stdout) {
           resolve(false);
         }
