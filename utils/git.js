@@ -1,9 +1,12 @@
 const { exec } = require("child_process");
 
-module.exports.commit = async function (path, version) {
+module.exports.commit = async function (config) {
+  const commit = config.commit
+    ? config.commit
+    : `928上线封版${config.version}`;
   return new Promise((resolve) => {
     exec(
-      `cd ${path} && git add ./package.json && git commit -m 上线封版${version}`,
+      `cd ${config.path} && git add ./package.json && git commit -m ${commit}`,
       (error, stdout) => {
         if (error) {
           resolve(false);
@@ -15,10 +18,10 @@ module.exports.commit = async function (path, version) {
 };
 module.exports.diff = async function (path, branch) {
   return new Promise((resolve) => {
+    // 通过本地到远程的变更统计来判断本地代码是否是最新代码
     exec(
-      `cd ${path} && git diff ${branch}..origin/${branch}`,
+      `cd ${path} && git diff --stat ${branch}...origin/${branch}`,
       (error, stdout) => {
-        // console.log(`cd ${path} && git diff ${branch}..origin/${branch}`);
         if (error || stdout) {
           resolve(false);
         }
@@ -43,16 +46,33 @@ module.exports.hasCodeChanges = async function (path) {
     });
   });
 };
-module.exports.getBranchName = async function (path) {
-  return new Promise((resolve, reject) => {
-    const projectPath = exec(
-      `cd ${path} && git branch --show-current`,
-      function (error, stdout, stderr) {
-        if (error) {
-          reject(error);
+module.exports.checkout = async function (config) {
+  return new Promise((resolve) => {
+    exec(
+      `cd ${config.path} && git checkout ${config.branch}`,
+      (error, stdout) => {
+        if (!error) {
+          if (stdout.includes("Your branch is up to date with")||stdout.includes("Your branch is ahead of")) {
+            resolve(true);
+          }
+          resolve(false);
         }
-        resolve(stdout.replace(/(\r|\n)/g, ""));
+        resolve(true);
       }
     );
+  });
+};
+module.exports.getBranchName = async function (path) {
+  return new Promise((resolve, reject) => {
+    exec(`cd ${path} && git branch --show-current`, function (
+      error,
+      stdout,
+      stderr
+    ) {
+      if (error) {
+        reject(error);
+      }
+      resolve(stdout.replace(/(\r|\n)/g, ""));
+    });
   });
 };

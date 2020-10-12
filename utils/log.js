@@ -1,7 +1,7 @@
 class MsgFunc {
-  constructor(configArray) {
-    this.len = configArray.length;
-    this.configArray = configArray;
+  constructor(configObject, allMsg) {
+    this.configObject = configObject;
+    this.allMsg = allMsg;
     this.msgMap = {};
   }
   red(msg) {
@@ -12,6 +12,9 @@ class MsgFunc {
   }
   white(msg) {
     console.log("\x1B[37m%s\x1B[0m", msg);
+  }
+  cyan(msg) {
+    console.log("\x1B[36m%s\x1B[0m", msg);
   }
   successMsgPush(type, name, msg) {
     if (this.msgMap.hasOwnProperty(type)) {
@@ -42,6 +45,24 @@ class MsgFunc {
       this.msgMap[type] = [
         {
           type: "white",
+          msg,
+          name,
+        },
+      ];
+    }
+    this.printMsg(type);
+  }
+  warnMsgPush(type, name, msg) {
+    if (this.msgMap.hasOwnProperty(type)) {
+      this.msgMap[type].push({
+        type: "cyan",
+        msg,
+        name,
+      });
+    } else {
+      this.msgMap[type] = [
+        {
+          type: "cyan",
           msg,
           name,
         },
@@ -82,21 +103,25 @@ class MsgFunc {
         } else if (index === this.msgMap[type].length) {
           msg = element.name + " " + element.msg + "\n";
         }
-
-        this[element.type](msg);
+        if (this.allMsg || element.type === "red" || element.type === "cyan") {
+          this[element.type](msg);
+        }
       }
     }
   }
-  configCheck() {
-    if (!Array.isArray(this.configArray)) {
+  configCheck(path) {
+    if (
+      Object.prototype.toString.call(this.configObject) !== "[object Object]" ||
+      !Array.isArray(this.configObject.gcook)
+    ) {
       console.error(
-        `Please complete the publishing configuration at the ${program.path}`
+        `Please complete the publishing configuration at the ${path}`
       );
       return false;
     } else if (
-      !this.configArray.every(
+      !this.configObject.gcook.every(
         (item) =>
-          item.hasOwnProperty("filePath") &&
+          item.hasOwnProperty("path") &&
           item.hasOwnProperty("branch") &&
           item.hasOwnProperty("version") &&
           item.hasOwnProperty("name")
@@ -105,20 +130,24 @@ class MsgFunc {
       console.log(
         "Please complete the publishing configuration like this: \n",
         JSON.stringify(
-          [
-            {
-              filePath: "scm-merchants-works/npm/scm-components",
-              branch: "feat-0919",
-              version: "1.8.0",
-              name: "@choicefe/scm-components",
-            },
-          ],
+          {
+            root: "E:/works/chenSen/scm-merchants-works/npm",
+            gcook: [
+              {
+                path: "scm-permission",
+                branch: "feat-0919",
+                version: "1.9.0",
+                name: "@choicefe/scm-permission",
+              },
+            ],
+          },
           "",
           "\t"
         )
       );
       return false;
     }
+    this.len = this.configObject.gcook.length;
     return true;
   }
 }

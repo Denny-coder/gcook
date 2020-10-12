@@ -22,11 +22,10 @@ module.exports.updateToLatestVersion = async function () {
     //
   });
 };
-module.exports.publish = async function (path, command,name) {
+module.exports.publish = async function (path, command, name) {
   return new Promise((resolve) => {
     exec(`cd ${path} && gcook ${command}`, (error, stdout) => {
-      console.log(name,error, stdout)
-      if (error) {
+      if (error || !stdout.includes("发布成功")) {
         resolve(false);
       }
       resolve(true);

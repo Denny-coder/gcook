@@ -2,16 +2,16 @@
   "name": "cookpublishtool",
   "version": "1.0.0",
   "description": "cook组件批量发布工具",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "test": "ckp"
+    "test": "ckp -p E:/works/chenSen/cookPublishTool/config.js -a"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Denny-coder/cookPublishTool.git"
   },
   "keywords": [
-    "cook",
+    "gcook",
     "publish"
   ],
   "bin": {
