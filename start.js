@@ -2,18 +2,25 @@
 const { exec } = require("child_process");
 const { connect } = require("socket.io-client");
 
+const command = process.argv.slice(2);
+
 (async function cook() {
+  const hasChanges = await hasCodeChanges();
+  if (hasChanges) {
+    console.log("Please git commit your changes!");
+    return;
+  }
+
   const latest = await getLatestVersion();
   const local = getLocalVersion();
 
   if (latest !== local) {
     console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
-    // process.exit(0);
+    updateToLatestVersion();
+    return;
   }
 
   const outs = [];
-
-  const command = process.argv.slice(2);
 
   const cp = exec(`cd ${process.cwd()} && cook ${command}`);
 
@@ -82,4 +89,29 @@ async function getLatestVersion() {
 
 function getLocalVersion() {
   return require("./package.json").version;
+}
+
+async function updateToLatestVersion() {
+  console.log("Use Latest Version Installing...");
+  const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
+  cp.stdout.on("data", (data) => {
+    console.log(data);
+  });
+  cp.stdout.on("end", () => {
+    //
+  });
+}
+
+async function hasCodeChanges() {
+  return new Promise((resolve) => {
+    exec("git status", (error, stdout) => {
+      if (!error) {
+        if (stdout.includes("Changes not staged for commit") || stdout.includes("Changes to be committed")) {
+          resolve(true);
+        }
+        resolve(false);
+      }
+      resolve(true);
+    });
+  });
 }
