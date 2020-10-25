@@ -8,7 +8,7 @@ const { connect } = require("socket.io-client");
 
   if (latest !== local) {
     console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
-    process.exit(0);
+    // process.exit(0);
   }
 
   const outs = [];
@@ -23,6 +23,12 @@ const { connect } = require("socket.io-client");
   });
 
   cp.stdout.on("end", async () => {
+
+    if (outs.length === 0) {
+      console.log(`Please install cook, use: npm install -g cook@`);
+      return;
+    }
+
     if (outs[outs.length - 1].indexOf("发布成功") === -1) {
       return;
     }
