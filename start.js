@@ -1,8 +1,29 @@
 #!/usr/bin/env node
 const { exec } = require("child_process");
+const { which } = require("shelljs");
+const path = require("path");
+const fs = require("fs");
 const { connect } = require("socket.io-client");
 
 const command = process.argv.slice(2);
+
+try {
+  const cookPath = which("cook");
+  const targetPath = path.resolve(cookPath.replace(/COOK\.CMD/i, ""), "node_modules", "cook-cli", "webpack", "bisheng", "config", "compile.js");
+  // 使用用户配置的tsconfig
+  const isExist = fs.existsSync(targetPath);
+  const isExistTsConfig = fs.existsSync(`${process.cwd()}/tsconfig.json`);
+  if (isExist && isExistTsConfig) {
+    const data = fs.readFileSync(targetPath).toString();
+    if (!data.includes("ts.createProject")) {
+      const targetData = data.replace("const tsResult = gulp.src(source)", "const tsResult = ts.createProject(`${process.cwd()}/tsconfig.json`)");
+      fs.writeFileSync(targetPath, targetData);
+    }
+  }
+} catch (error) {
+  console.log(error);
+  process.exit(0);
+}
 
 (async function cook() {
   const hasChanges = await hasCodeChanges();
@@ -30,7 +51,6 @@ const command = process.argv.slice(2);
   });
 
   cp.stdout.on("end", async () => {
-
     if (outs.length === 0) {
       console.log(`Please install cook, use: npm install -g cook@`);
       return;
