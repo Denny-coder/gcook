@@ -16,7 +16,10 @@ try {
   if (isExist && isExistTsConfig) {
     const data = fs.readFileSync(targetPath).toString();
     if (!data.includes("ts.createProject")) {
-      const targetData = data.replace("const tsResult = gulp.src(source)", "const tsResult = ts.createProject(`${process.cwd()}/tsconfig.json`)");
+      const targetData = data.replace(
+        "const tsResult = gulp.src(source)",
+        "const tsResult = ts.createProject(`${process.cwd()}/tsconfig.json`).src()"
+      );
       fs.writeFileSync(targetPath, targetData);
     }
   }
