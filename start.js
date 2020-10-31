@@ -16,13 +16,13 @@ const command = process.argv.slice(2);
   const local = getLocalVersion();
 
   if (latest !== local) {
-    console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
+    console.log(`Please install latest version: npm install -g @choicefe/gcook@${latest}`);
     return;
   }
 
   const outs = [];
 
-  const p = path.resolve(__dirname, "node_modules", "gagli", "bin", "cook");
+  const p = path.resolve(__dirname, "node_modules", "@choicefe/gagli", "bin", "cook");
 
   const cp = exec(`cd ${process.cwd()} && node ${p} ${command}`);
 
@@ -81,7 +81,7 @@ async function getBranch() {
 
 async function getLatestVersion() {
   return new Promise((resolve) => {
-    const cp = exec("npm view gcook version");
+    const cp = exec("npm view @choicefe/gcook version");
     cp.stdout.on("data", (version) => {
       resolve(version.replace(/(\r|\n)/g, ""));
     });
@@ -101,25 +101,6 @@ async function hasCodeChanges() {
         }
         resolve(false);
       }
-      resolve(true);
-    });
-  });
-}
-
-async function installGagli() {
-  return new Promise((resolve) => {
-    console.log("npm install -g cook");
-    const cp = exec("npm install -g gagli");
-
-    cp.stdout.on("data", (data) => {
-      console.log(data);
-    });
-
-    cp.stdout.on("error", (data) => {
-      resolve(false);
-    });
-
-    cp.stdout.on("end", async () => {
       resolve(true);
     });
   });
