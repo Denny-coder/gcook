@@ -1,32 +1,9 @@
 #!/usr/bin/env node
 const { exec } = require("child_process");
-const { which } = require("shelljs");
 const path = require("path");
-const fs = require("fs");
 const { connect } = require("socket.io-client");
 
 const command = process.argv.slice(2);
-
-try {
-  const cookPath = which("cook");
-  const targetPath = path.resolve(cookPath.replace(/COOK\.CMD/i, ""), "node_modules", "cook-cli", "webpack", "bisheng", "config", "compile.js");
-  // 使用用户配置的tsconfig
-  const isExist = fs.existsSync(targetPath);
-  const isExistTsConfig = fs.existsSync(`${process.cwd()}/tsconfig.json`);
-  if (isExist && isExistTsConfig) {
-    const data = fs.readFileSync(targetPath).toString();
-    if (!data.includes("ts.createProject")) {
-      const targetData = data.replace(
-        "const tsResult = gulp.src(source)",
-        "const tsResult = ts.createProject(`${process.cwd()}/tsconfig.json`).src()"
-      );
-      fs.writeFileSync(targetPath, targetData);
-    }
-  }
-} catch (error) {
-  console.log(error);
-  process.exit(0);
-}
 
 (async function cook() {
   const hasChanges = await hasCodeChanges();
@@ -40,13 +17,14 @@ try {
 
   if (latest !== local) {
     console.log(`Please install latest version: npm install -g gcook@${latest} --registry=http://registry.npmjs.org`);
-    updateToLatestVersion();
     return;
   }
 
   const outs = [];
 
-  const cp = exec(`cd ${process.cwd()} && cook ${command}`);
+  const p = path.resolve(__dirname, "node_modules", "gagli", "bin", "cook");
+
+  const cp = exec(`cd ${process.cwd()} && node ${p} ${command}`);
 
   cp.stdout.on("data", (data) => {
     outs.push(data);
@@ -55,7 +33,7 @@ try {
 
   cp.stdout.on("end", async () => {
     if (outs.length === 0) {
-      console.log(`Please install cook, use: npm install -g cook@`);
+      console.log("Try again!");
       return;
     }
 
@@ -114,17 +92,6 @@ function getLocalVersion() {
   return require("./package.json").version;
 }
 
-async function updateToLatestVersion() {
-  console.log("Use Latest Version Installing...");
-  const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
-  cp.stdout.on("data", (data) => {
-    console.log(data);
-  });
-  cp.stdout.on("end", () => {
-    //
-  });
-}
-
 async function hasCodeChanges() {
   return new Promise((resolve) => {
     exec("git status", (error, stdout) => {
@@ -134,6 +101,25 @@ async function hasCodeChanges() {
         }
         resolve(false);
       }
+      resolve(true);
+    });
+  });
+}
+
+async function installGagli() {
+  return new Promise((resolve) => {
+    console.log("npm install -g cook");
+    const cp = exec("npm install -g gagli");
+
+    cp.stdout.on("data", (data) => {
+      console.log(data);
+    });
+
+    cp.stdout.on("error", (data) => {
+      resolve(false);
+    });
+
+    cp.stdout.on("end", async () => {
       resolve(true);
     });
   });
