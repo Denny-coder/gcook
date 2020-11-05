@@ -2,8 +2,8 @@ const { exec } = require("child_process");
 
 module.exports.commit = async function (config) {
   const commit = config.commit
-    ? config.commit
-    : `928上线封版${config.version}`;
+    ? `${config.commit}${config.version}`
+    : `上线封版${config.version}`;
   return new Promise((resolve) => {
     exec(
       `cd ${config.path} && git add ./package.json && git commit -m ${commit}`,
@@ -52,7 +52,10 @@ module.exports.checkout = async function (config) {
       `cd ${config.path} && git checkout ${config.branch}`,
       (error, stdout) => {
         if (!error) {
-          if (stdout.includes("Your branch is up to date with")||stdout.includes("Your branch is ahead of")) {
+          if (
+            stdout.includes("Your branch is up to date with") ||
+            stdout.includes("Your branch is ahead of")
+          ) {
             resolve(true);
           }
           resolve(false);

@@ -134,41 +134,41 @@ function batchPublish(config) {
         }
       }
       // git commit 完成准备publish
-      // if (commitFlag) {
-      //   msgFunc.successMsgPush(
-      //     "commit",
-      //     config.name,
-      //     `git add & git commit 执行成功`
-      //   );
-      //   msgFunc.warnMsgPush(
-      //     "publish",
-      //     config.name,
-      //     `cook发布较为耗时，请耐心等待...`
-      //   );
-      //   const command =
-      //     config.version.indexOf("beta") > -1 ? "beta" : "publish";
-      //   const publishFlag = await gcook.publish(
-      //     config.path,
-      //     command,
-      //     config.name
-      //   );
-      //   if (publishFlag) {
-      //     resolve({
-      //       name: config.name,
-      //       msg: `发布完成，请及时合并至master`,
-      //     });
-      //   }
-      // } else {
-      //   msgFunc.errorMsgPush(
-      //     "commit",
-      //     config.name,
-      //     `git add & git commit 执行失败`
-      //   );
-      //   resolve({
-      //     name: config.name,
-      //     msg: `package.git commit 执行失败`,
-      //   });
-      // }
+      if (commitFlag) {
+        msgFunc.successMsgPush(
+          "commit",
+          config.name,
+          `git add & git commit 执行成功`
+        );
+        msgFunc.warnMsgPush(
+          "publish",
+          config.name,
+          `cook发布较为耗时，请耐心等待...`
+        );
+        const command =
+          config.version.indexOf("beta") > -1 ? "beta" : "publish";
+        const publishFlag = await gcook.publish(
+          config.path,
+          command,
+          config.name
+        );
+        if (publishFlag) {
+          resolve({
+            name: config.name,
+            msg: `${config.version}发布完成，请及时合并至master`,
+          });
+        }
+      } else {
+        msgFunc.errorMsgPush(
+          "commit",
+          config.name,
+          `git add & git commit 执行失败`
+        );
+        resolve({
+          name: config.name,
+          msg: `package.git commit 执行失败`,
+        });
+      }
     } else {
       msgFunc.errorMsgPush("diff", config.name, `请更新本地代码`);
       resolve({
