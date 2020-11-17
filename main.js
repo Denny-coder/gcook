@@ -16,7 +16,7 @@ program
   .command("batch")
   .requiredOption("-p, --path <string>", "Config.js Path")
   .option("-a, --all", "All message")
-  .description("组件开发调试。。。")
+  .description("npm包批量发布。。。")
   .action((data) => {
     require(res("batchPubilsh.js"))(data);
   });
