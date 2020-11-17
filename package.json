@@ -3,9 +3,7 @@
   "version": "1.3.4",
   "description": "cook组件批量发布工具",
   "main": "main.js",
-  "scripts": {
-    "test": "ckp batch -p E:/works/chenSen/cookPublishTool/config.js -a"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Denny-coder/cookPublishTool.git"
