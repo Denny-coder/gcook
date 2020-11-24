@@ -14,7 +14,7 @@ function batchPubilsh(program) {
   // 检查数据合法性
   if (!msgFunc.configCheck(program.path)) {
     return;
-  } else {
+  } else if(configObject.root) {
     configObject.gcook.forEach((item) => {
       item.path = configObject.root + "/" + item.path;
       item.path.replace("//", "/");
