@@ -1,14 +1,33 @@
 #!/usr/bin/env node
 const { program } = require("commander");
-const { resolve,normalize } = require("path");
-const res = (command) => resolve(__dirname, "commands", command);
+const path = require("path");
+const shell = require("shelljs");
+const res = (command) => path.resolve(__dirname, "commands", command);
+var gcook = require("./utils/gcook.js");
 
 // 定义当前版本
-program.version(
-  require("./package.json").version,
-  "-v, --vers",
-  "output the current version"
-);
+program
+  .version(
+    require("./package.json").version,
+    "-v, --vers",
+    "output the current version"
+  )
+  .arguments("<cmd> [env]")
+  .action(function (cmd, env) {
+    const p = path.resolve(
+      __dirname,
+      "node_modules",
+      "@choicefe/gagli",
+      "bin",
+      "cook"
+    );
+    const args = program.args.join(" ");
+    shell.exec(`node ${p} ${args}`, function (code, stdout, stderr) {
+      if (stderr) {
+        throw stderr;
+      }
+    });
+  });
 
 program.usage("<command>");
 
@@ -18,19 +37,25 @@ program
   .option("-a, --all", "All message")
   .description("npm包批量发布。。。")
   .action((data) => {
-    require(res("batchPubilsh.js"))(data);
+    console.log("data", data);
+    // require(res("batchPubilsh.js"))(data);
   });
 program
   .command("beta")
   .description("beta 版本发布。。。")
-  .action((data) => {
+  .action(async (data) => {
+    if (await gcook.needUpdate()) {
+      return;
+    }
     require(res("gcook.js"))("beta");
   });
 program
   .command("publish")
   .description("publish 版本发布。。。")
-  .action((data) => {
+  .action(async (data) => {
+    if (await gcook.needUpdate()) {
+      return;
+    }
     require(res("gcook.js"))("publish");
   });
-  // console.log(process.argv)
 program.parse(process.argv);

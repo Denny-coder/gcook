@@ -11,16 +11,6 @@ async function gcook(command) {
     return;
   }
 
-  const latest = await getLatestVersion();
-  const local = getLocalVersion();
-
-  if (latest !== local) {
-    console.log(
-      `Please install latest version: npm install -g @choicefe/gcook@${latest}`
-    );
-    return;
-  }
-
   const outs = [];
 
   const p = path.resolve(
