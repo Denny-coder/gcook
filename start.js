@@ -37,8 +37,7 @@ program
   .option("-a, --all", "All message")
   .description("npm包批量发布。。。")
   .action((data) => {
-    console.log("data", data);
-    // require(res("batchPubilsh.js"))(data);
+    require(res("batchPubilsh.js"))(data);
   });
 program
   .command("beta")

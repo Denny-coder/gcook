@@ -8,10 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "启动程序",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/main.js -p E:/works/chenSen/cookPublishTool/config.js"
+            "program": "${workspaceRoot}/start.js batch -p ${workspaceRoot}/config.js"
         }
     ]
 }

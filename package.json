@@ -4,7 +4,9 @@
   "description": "增强版cook, 优化cook",
   "main": "start.js",
   "repository": "https://github.com/fanzkday/gcook.git",
-  "scripts": {},
+  "scripts": {
+    "gcook": "node ./start.js batch -p E:/works/chenSen/gcook/config.js -a"
+  },
   "bin": {
     "gcook": "./start.js"
   },

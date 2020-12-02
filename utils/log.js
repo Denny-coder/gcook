@@ -1,4 +1,4 @@
-class MsgFunc {
+class Log {
   constructor(configObject, allMsg) {
     this.configObject = configObject;
     this.allMsg = allMsg;
@@ -151,4 +151,4 @@ class MsgFunc {
     return true;
   }
 }
-module.exports.MsgFunc = MsgFunc;
+module.exports.Log = Log;
