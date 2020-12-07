@@ -8,8 +8,8 @@ module.exports.read = (path) => {
 module.exports.write = (path, data) => {
   return new Promise((resolve, reject) => {
     fs.writeFile(path, data, (error) => {
-      if (error) return resolve(false);
-      resolve(true);
+      if (error) return resolve([false, error]);
+      resolve([true]);
     });
   });
 };

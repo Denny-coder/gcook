@@ -12,9 +12,9 @@ class Git {
         `cd ${this.config.path} && git add ./package.json && git commit -m ${commit}`,
         (error, stdout) => {
           if (error) {
-            resolve(false);
+            resolve([false, error, stdout]);
           }
-          resolve(true);
+          resolve([true]);
         }
       );
     });
@@ -27,9 +27,9 @@ class Git {
         `cd ${this.config.path} && git diff --stat ${this.config.branch}...origin/${target}`,
         (error, stdout) => {
           if (error || stdout) {
-            resolve(false);
+            resolve([false, error, stdout]);
           }
-          resolve(true);
+          resolve([true]);
         }
       );
     });
@@ -41,19 +41,17 @@ class Git {
       exec(
         `cd ${this.config.path} && git pull origin ${target}`,
         (error, stdout) => {
-          console.log(error);
-          console.log(stdout);
           if (!error) {
             if (
               stdout.includes("Already up to date") ||
               stdout.includes("Fast-forward") ||
               stdout.includes("Merge made by the 'recursive' strategy")
             ) {
-              resolve(true);
+              resolve([true]);
             }
-            resolve(false);
+            resolve([false]);
           }
-          resolve(false);
+          resolve([false]);
         }
       );
     });
@@ -65,12 +63,10 @@ class Git {
       exec(
         `cd ${this.config.path} && git push origin ${target}`,
         (error, stdout) => {
-          console.log(error);
-          console.log(stdout);
           if (error || stdout) {
-            resolve(false);
+            resolve([false, error, stdout]);
           }
-          resolve(true);
+          resolve([true]);
         }
       );
     });
@@ -80,18 +76,16 @@ class Git {
       // 拉取远程代码
       const target = branch || this.config.branch;
       exec(`cd ${this.config.path} && git merge ${target}`, (error, stdout) => {
-        console.log(error);
-        console.log(stdout);
         if (!error) {
           if (
             stdout.includes("Fast-forward") ||
             stdout.includes("Already up to date.")
           ) {
-            resolve(true);
+            resolve([true]);
           }
-          resolve(false);
+          resolve([false, error, stdout]);
         }
-        resolve(false);
+        resolve([false, error, stdout]);
       });
     });
   }
@@ -103,11 +97,11 @@ class Git {
             stdout.includes("Changes not staged for commit") ||
             stdout.includes("Changes to be committed")
           ) {
-            resolve(true);
+            resolve([true, error, stdout]);
           }
-          resolve(false);
+          resolve([false]);
         }
-        resolve(true);
+        resolve([true, error, stdout]);
       });
     });
   }
@@ -118,8 +112,6 @@ class Git {
       exec(
         `cd ${this.config.path} && git checkout ${target}`,
         (error, stdout) => {
-          console.log(error);
-          console.log(stdout);
           if (!error) {
             if (
               stdout.includes("Already on") ||
@@ -127,11 +119,11 @@ class Git {
               stdout.includes("Your branch is ahead of") ||
               stdout.includes("Your branch is up to date with")
             ) {
-              resolve(true);
+              resolve([true]);
             }
-            resolve(false);
+            resolve([false, error, stdout]);
           }
-          resolve(false);
+          resolve([false, error, stdout]);
         }
       );
     });
@@ -144,7 +136,7 @@ class Git {
           if (error) {
             reject(error);
           }
-          resolve(stdout.replace(/(\r|\n)/g, ""));
+          resolve([stdout.replace(/(\r|\n)/g, "")]);
         }
       );
     });
