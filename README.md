@@ -8,9 +8,9 @@
 
 - 作用: 搜集更多的组件发版信息
 
-- 版本要求: gcook@1.2.12
+- 版本要求: cook@1.4.0, gcook@1.2.12
 
-- 安装: npm install -g gcook --registry=http://registry.npmjs.org
+- 安装: npm install -g @choicefe/gcook cook-cli --registry=http://npm.choicesaas.cn
 
 - 注意事项:
 
