@@ -49,9 +49,9 @@ class Git {
             ) {
               resolve([true]);
             }
-            resolve([false]);
+            resolve([false, error, stdout]);
           }
-          resolve([false]);
+          resolve([false, error, stdout]);
         }
       );
     });

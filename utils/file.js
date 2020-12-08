@@ -5,6 +5,12 @@ module.exports.read = (path) => {
   var _packageJson = fs.readFileSync(path);
   return JSON.parse(_packageJson);
 };
+module.exports.exists = (path) => {
+  return fs.existsSync(path);
+};
+module.exports.mkdir = (path) => {
+  return fs.mkdirSync(path);
+};
 module.exports.write = (path, data) => {
   return new Promise((resolve, reject) => {
     fs.writeFile(path, data, (error) => {

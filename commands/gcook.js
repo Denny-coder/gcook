@@ -13,18 +13,10 @@ async function gcook(command) {
 
   const outs = [];
 
-  const p = path.resolve(
-    __dirname,
-    "../node_modules",
-    "@choicefe/gagli",
-    "bin",
-    "cook"
-  );
-  const cp = exec(`cd ${process.cwd()} && node ${p} ${command}`);
+  const cp = exec(`cd ${process.cwd()} && cook ${command}`);
 
   cp.stdout.on("data", (data) => {
     outs.push(data);
-    console.log(data);
   });
 
   cp.stdout.on("end", async () => {

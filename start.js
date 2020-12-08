@@ -36,25 +36,25 @@ program
   .requiredOption("-p, --path <string>", "Config.js Path")
   .option("-a, --all", "All message")
   .description("npm包批量发布。。。")
-  .action((data) => {
-    require(res("batchPubilsh.js"))(data);
+  .action(async (data) => {
+    if (await gcook.intercept()) {
+      require(res("batchPubilsh.js"))(data);
+    }
   });
 program
   .command("beta")
   .description("beta 版本发布。。。")
   .action(async (data) => {
-    if (await gcook.needUpdate()) {
-      return;
+    if (await gcook.intercept()) {
+      require(res("gcook.js"))("beta");
     }
-    require(res("gcook.js"))("beta");
   });
 program
   .command("publish")
   .description("publish 版本发布。。。")
   .action(async (data) => {
-    if (await gcook.needUpdate()) {
-      return;
+    if (await gcook.intercept()) {
+      require(res("gcook.js"))("publish");
     }
-    require(res("gcook.js"))("publish");
   });
 program.parse(process.argv);

@@ -6,6 +6,7 @@
 
 var { Git } = require("../utils/git.js");
 var { Log } = require("../utils/log.js");
+var file = require("../utils/file.js");
 var { Validator } = require("../utils/validator.js");
 const masterBranch = "master";
 // const masterBranch = "feat-release-1130-test";
@@ -43,12 +44,19 @@ function batchPubilsh(program) {
     });
   }
   Promise.all(configObject.gcook.map((config) => batchPublish(config)))
-    .then((res) => {
+    .then((result) => {
       console.table(
-        res
+        result
           .filter((item) => item)
           .map((item) => ({ name: item.name, msg: item.msg }))
       );
+      try {
+        const logPath = `${process.cwd()}/log.json`;
+        file.write(logPath, JSON.stringify({ log, result }, null, 2));
+        console.log("相关日志可参考:" + logPath);
+      } catch (error) {
+        console.error(error);
+      }
       console.log("程序执行结束");
     })
     .catch((error) => {

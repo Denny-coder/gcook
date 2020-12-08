@@ -1,8 +1,8 @@
 const { exec } = require("child_process");
 
-const getLatestVersion = function () {
+const getLatestVersion = function (packageName) {
   return new Promise((resolve) => {
-    const cp = exec("npm view @choicefe/gcook version");
+    const cp = exec(`npm view ${packageName} version`);
     cp.stdout.on("data", (version) => {
       resolve(version.replace(/(\r|\n)/g, ""));
     });
@@ -12,16 +12,28 @@ const getLatestVersion = function () {
 const getLocalVersion = function () {
   return require("../package.json").version;
 };
-const needUpdate = async function () {
-  const latest = await getLatestVersion();
+
+const gcookUpdate = async function () {
+  const latest = await getLatestVersion("@choicefe/gcook");
   const local = getLocalVersion();
   if (latest !== local) {
     console.log(
       `Please install latest version: npm install -g @choicefe/gcook@${latest}`
     );
-    return true;
+    return false;
   }
-  return false;
+  return true;
+};
+
+const cookUpdate = async function () {
+  const latest = await getLatestVersion("cook-cli");
+  if (latest < "1.4.0") {
+    console.log(
+      `Please install latest version: npm install -g cook-cli@${latest}`
+    );
+    return false;
+  }
+  return true;
 };
 
 const updateToLatestVersion = async function () {
@@ -36,17 +48,24 @@ const updateToLatestVersion = async function () {
 const publish = async function (path, command, name) {
   return new Promise((resolve) => {
     exec(`cd ${path} && gcook ${command}`, (error, stdout) => {
-      if (error || !stdout.includes("发布成功")) {
+      if (error) {
         resolve([false, error, stdout]);
       }
       resolve([true]);
     });
   });
 };
+const intercept = async function () {
+  const gcookUpdateFlag = await gcookUpdate();
+  const cookUpdateFlag = await cookUpdate();
+  return gcookUpdateFlag && cookUpdateFlag;
+};
 module.exports = {
   getLatestVersion,
   getLocalVersion,
-  needUpdate,
+  cookUpdate,
+  gcookUpdate,
+  intercept,
   updateToLatestVersion,
   publish,
 };
