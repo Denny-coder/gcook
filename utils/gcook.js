@@ -1,20 +1,30 @@
-const { exec } = require("child_process");
+const { exec } = require('child_process');
 
 const getLatestVersion = function (packageName) {
   return new Promise((resolve) => {
     const cp = exec(`npm view ${packageName} version`);
-    cp.stdout.on("data", (version) => {
-      resolve(version.replace(/(\r|\n)/g, ""));
+    cp.stdout.on('data', (version) => {
+      resolve(version.replace(/(\r|\n)/g, ''));
     });
   });
 };
 
 const getLocalVersion = function () {
-  return require("../package.json").version;
+  return require('../package.json').version;
+};
+const getCookVersion = function () {
+  return new Promise((resolve) => {
+    const cp = exec(`cook -v`, (error, stdout) => {
+      if (error) {
+        throw error;
+      }
+      resolve(stdout.match(/[0-9]*\.[0-9]*\.[0-9]*/));
+    });
+  });
 };
 
 const gcookUpdate = async function () {
-  const latest = await getLatestVersion("@choicefe/gcook");
+  const latest = await getLatestVersion('@choicefe/gcook');
   const local = getLocalVersion();
   if (latest !== local) {
     console.log(
@@ -26,29 +36,27 @@ const gcookUpdate = async function () {
 };
 
 const cookUpdate = async function () {
-  const latest = await getLatestVersion("cook-cli");
-  if (latest < "1.4.0") {
-    console.log(
-      `Please install latest version: npm install -g cook-cli@${latest}`
-    );
+  const latest = await getCookVersion();
+  if (latest[0] < '1.4.0') {
+    console.log(`Please install latest version: npm install -g cook-cli@1.4.0`);
     return false;
   }
   return true;
 };
 
 const updateToLatestVersion = async function () {
-  const cp = exec(`npx --ignore-existing gcook ${command.join(" ")}`);
-  cp.stdout.on("data", (data) => {
+  const cp = exec(`npx --ignore-existing gcook ${command.join(' ')}`);
+  cp.stdout.on('data', (data) => {
     console.log(data);
   });
-  cp.stdout.on("end", () => {
+  cp.stdout.on('end', () => {
     //
   });
 };
 const publish = async function (path, command, name) {
   return new Promise((resolve) => {
     exec(`cd ${path} && gcook ${command}`, (error, stdout) => {
-      if (error || !stdout.includes("发布成功")) {
+      if (error || !stdout.includes('发布成功')) {
         resolve([false, error, stdout]);
       }
       resolve([true]);
