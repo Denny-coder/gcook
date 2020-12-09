@@ -12,11 +12,12 @@ async function gcook(command) {
   }
 
   const outs = [];
-
+  
   const cp = exec(`cd ${process.cwd()} && cook ${command}`);
 
   cp.stdout.on("data", (data) => {
     outs.push(data);
+    console.log(data);
   });
 
   cp.stdout.on("end", async () => {

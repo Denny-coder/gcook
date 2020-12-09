@@ -217,7 +217,7 @@ class Validator {
 
   async publishCook(masterBranch) {
     this.log.warnMsgPush(
-      "publishCook",
+      "publishCookBegin",
       this.config.name,
       `cook发布较为耗时，请耐心等待...`
     );

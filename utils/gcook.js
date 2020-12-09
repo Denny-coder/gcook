@@ -48,7 +48,7 @@ const updateToLatestVersion = async function () {
 const publish = async function (path, command, name) {
   return new Promise((resolve) => {
     exec(`cd ${path} && gcook ${command}`, (error, stdout) => {
-      if (error) {
+      if (error || !stdout.includes("发布成功")) {
         resolve([false, error, stdout]);
       }
       resolve([true]);

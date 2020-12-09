@@ -6,6 +6,7 @@
 
 var { Git } = require("../utils/git.js");
 var { Log } = require("../utils/log.js");
+const path = require("path");
 var file = require("../utils/file.js");
 var { Validator } = require("../utils/validator.js");
 const masterBranch = "master";
@@ -51,7 +52,7 @@ function batchPubilsh(program) {
           .map((item) => ({ name: item.name, msg: item.msg }))
       );
       try {
-        const logPath = `${process.cwd()}/log.json`;
+        const logPath = path.resolve(__dirname, "..", "log.json");
         file.write(logPath, JSON.stringify({ log, result }, null, 2));
         console.log("相关日志可参考:" + logPath);
       } catch (error) {

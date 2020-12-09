@@ -14,15 +14,15 @@ program
   )
   .arguments("<cmd> [env]")
   .action(function (cmd, env) {
-    const p = path.resolve(
-      __dirname,
-      "node_modules",
-      "@choicefe/gagli",
-      "bin",
-      "cook"
-    );
+    // const p = path.resolve(
+    //   __dirname,
+    //   "node_modules",
+    //   "@choicefe/gagli",
+    //   "bin",
+    //   "cook"
+    // );
     const args = program.args.join(" ");
-    shell.exec(`node ${p} ${args}`, function (code, stdout, stderr) {
+    shell.exec(`cook ${args}`, function (code, stdout, stderr) {
       if (stderr) {
         throw stderr;
       }
