@@ -1,107 +1,60 @@
 #!/usr/bin/env node
-const { exec } = require("child_process");
+const { program } = require("commander");
 const path = require("path");
-const { connect } = require("socket.io-client");
+const shell = require("shelljs");
+const res = (command) => path.resolve(__dirname, "commands", command);
+var gcook = require("./utils/gcook.js");
 
-const command = process.argv.slice(2);
-
-(async function cook() {
-  const hasChanges = await hasCodeChanges();
-  if (hasChanges) {
-    console.log("Please git commit your changes!");
-    return;
-  }
-
-  const latest = await getLatestVersion();
-  const local = getLocalVersion();
-
-  if (latest !== local) {
-    console.log(`Please install latest version: npm install -g @choicefe/gcook@${latest}`);
-    return;
-  }
-
-  const outs = [];
-
-  const p = path.resolve(__dirname, "node_modules", "@choicefe/gagli", "bin", "cook");
-
-  const cp = exec(`cd ${process.cwd()} && node ${p} ${command}`);
-
-  cp.stdout.on("data", (data) => {
-    outs.push(data);
-    console.log(data);
-  });
-
-  cp.stdout.on("end", async () => {
-    if (outs.length === 0) {
-      console.log("Try again!");
-      return;
-    }
-
-    if (outs[outs.length - 1].indexOf("发布成功") === -1) {
-      return;
-    }
-    const info = await getGitInfo();
-    const branch = await getBranch();
-    const [author, commit] = info.split("#");
-
-    const out = outs[outs.length - 2];
-    const [name, version] = out.replace("+ ", "").split(/@(?=\d)/);
-
-    const io = connect("http://office.choicesaas.cn/choicefe");
-    io.emit("update", `${author}#${name}#${version}#${branch}#${commit}`);
-
-    setTimeout(() => {
-      io.close();
-    }, 1000);
-  });
-})();
-
-async function getGitInfo() {
-  return new Promise((resolve) => {
-    const cp = exec(`git log --pretty=format:"%an#%s" -1`);
-    cp.stdout.on("data", (data) => {
-      resolve(data);
-    });
-  });
-}
-
-async function getBranch() {
-  return new Promise((resolve) => {
-    const cp = exec("git branch");
-    cp.stdout.on("data", (data) => {
-      const branch = data
-        .split("\n")
-        .filter((b) => b.startsWith("*"))
-        .join("")
-        .replace("* ", "");
-      resolve(branch);
-    });
-  });
-}
-
-async function getLatestVersion() {
-  return new Promise((resolve) => {
-    const cp = exec("npm view @choicefe/gcook version");
-    cp.stdout.on("data", (version) => {
-      resolve(version.replace(/(\r|\n)/g, ""));
-    });
-  });
-}
-
-function getLocalVersion() {
-  return require("./package.json").version;
-}
-
-async function hasCodeChanges() {
-  return new Promise((resolve) => {
-    exec("git status", (error, stdout) => {
-      if (!error) {
-        if (stdout.includes("Changes not staged for commit") || stdout.includes("Changes to be committed")) {
-          resolve(true);
-        }
-        resolve(false);
+// 定义当前版本
+program
+  .version(
+    require("./package.json").version,
+    "-v, --vers",
+    "output the current version"
+  )
+  .arguments("<cmd> [env]")
+  .action(function (cmd, env) {
+    // const p = path.resolve(
+    //   __dirname,
+    //   "node_modules",
+    //   "@choicefe/gagli",
+    //   "bin",
+    //   "cook"
+    // );
+    const args = program.args.join(" ");
+    shell.exec(`cook ${args}`, function (code, stdout, stderr) {
+      if (stderr) {
+        throw stderr;
       }
-      resolve(true);
     });
   });
-}
+
+program.usage("<command>");
+
+program
+  .command("batch")
+  .requiredOption("-p, --path <string>", "Config.js Path")
+  .option("-a, --all", "All message")
+  .description("npm包批量发布。。。")
+  .action(async (data) => {
+    if (await gcook.intercept()) {
+      require(res("batchPubilsh.js"))(data);
+    }
+  });
+program
+  .command("beta")
+  .description("beta 版本发布。。。")
+  .action(async (data) => {
+    if (await gcook.intercept()) {
+      require(res("gcook.js"))("beta");
+    }
+  });
+program
+  .command("publish")
+  .description("publish 版本发布。。。")
+  .action(async (data) => {
+    if (await gcook.intercept()) {
+      require(res("gcook.js"))("publish");
+    }
+  });
+program.parse(process.argv);
