@@ -3,7 +3,6 @@ const { exec } = require("child_process");
 const path = require("path");
 const { connect } = require("socket.io-client");
 
-
 async function gcook(command) {
   const hasChanges = await hasCodeChanges();
   if (hasChanges) {
@@ -12,8 +11,14 @@ async function gcook(command) {
   }
 
   const outs = [];
-  
-  const cp = exec(`cd ${process.cwd()} && cook ${command}`);
+  const p = path.resolve(
+    __dirname,
+    "../node_modules",
+    "@choicefe/gagli",
+    "bin",
+    "cook"
+  );
+  const cp = exec(`cd ${process.cwd()} && node ${p} ${command}`);
 
   cp.stdout.on("data", (data) => {
     outs.push(data);
