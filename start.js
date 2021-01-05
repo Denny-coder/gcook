@@ -35,26 +35,40 @@ program
   .command("batch")
   .requiredOption("-p, --path <string>", "Config.js Path")
   .option("-a, --all", "All message")
+  .option("-b --batch", "是否来自批量操作", true)
   .description("npm包批量发布。。。")
   .action(async (data) => {
-    if (await gcook.intercept()) {
+    if (await gcook.intercept(data)) {
       require(res("batchPubilsh.js"))(data);
     }
   });
 program
   .command("beta")
+  .option("--no-master", "是否更新远程master", true)
+  .option("-b --batch", "是否来自批量操作", false)
   .description("beta 版本发布。。。")
   .action(async (data) => {
-    if (await gcook.intercept()) {
+    console.log(data.batch)
+    if (data.batch) {
       require(res("gcook.js"))("beta");
+    } else {
+      if (await gcook.intercept(data)) {
+        require(res("gcook.js"))("beta");
+      }
     }
   });
 program
   .command("publish")
+  .option("--no-master", "是否更新远程master", true)
+  .option("-b --batch", "是否来自批量操作", false)
   .description("publish 版本发布。。。")
   .action(async (data) => {
-    if (await gcook.intercept()) {
+    if (data.batch) {
       require(res("gcook.js"))("publish");
+    } else {
+      if (await gcook.intercept(data)) {
+        require(res("gcook.js"))("publish");
+      }
     }
   });
 program.parse(process.argv);

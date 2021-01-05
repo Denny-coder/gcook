@@ -1,11 +1,15 @@
 {
   "name": "@choicefe/gcook",
-  "version": "1.3.6",
+  "version": "1.3.5",
   "description": "增强版cook, 优化cook",
   "main": "start.js",
   "repository": "https://github.com/fanzkday/gcook.git",
   "bin": {
     "gcook": "./start.js"
+  },
+  "scripts": {
+    "gcook": "node ./start.js batch -p E:/works/chenSen/gcook/config.js -a",
+    "beta": "cd E:/works/chenSen/scm-merchants-works/npm/scm-widgets && node E:/works/chenSen/gcook/start.js beta"
   },
   "author": "fanzkday",
   "license": "ISC",

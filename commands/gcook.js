@@ -4,11 +4,7 @@ const path = require("path");
 const { connect } = require("socket.io-client");
 
 async function gcook(command) {
-  const hasChanges = await hasCodeChanges();
-  if (hasChanges) {
-    console.log("Please git commit your changes!");
-    return;
-  }
+
 
   const outs = [];
   const p = path.resolve(
@@ -74,32 +70,5 @@ async function getBranch() {
   });
 }
 
-async function getLatestVersion() {
-  return new Promise((resolve) => {
-    const cp = exec("npm view @choicefe/gcook version");
-    cp.stdout.on("data", (version) => {
-      resolve(version.replace(/(\r|\n)/g, ""));
-    });
-  });
-}
 
-function getLocalVersion() {
-  return require("../package.json").version;
-}
 
-async function hasCodeChanges() {
-  return new Promise((resolve) => {
-    exec("git status", (error, stdout) => {
-      if (!error) {
-        if (
-          stdout.includes("Changes not staged for commit") ||
-          stdout.includes("Changes to be committed")
-        ) {
-          resolve(true);
-        }
-        resolve(false);
-      }
-      resolve(true);
-    });
-  });
-}

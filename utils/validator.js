@@ -296,17 +296,17 @@ class Validator {
       this.log.successMsgPush(
         "mergeFlag",
         this.config.name,
-        `merge${this.config.branch}成功`
+        `merge ${this.config.branch} 成功`
       );
     } else {
       this.log.errorMsgPush(
         "mergeFlag",
         this.config.name,
-        `merge${this.config.branch}失败`
+        `merge ${this.config.branch} 失败`
       );
       return {
         name: this.config.name,
-        msg: `merge${this.config.branch}失败`,
+        msg: `merge ${this.config.branch} 失败`,
         error,
         stdout,
       };
@@ -318,17 +318,17 @@ class Validator {
       this.log.successMsgPush(
         "mergeFlag",
         this.config.name,
-        `merge${this.config.branch}成功`
+        `merge ${this.config.branch} 成功`
       );
     } else {
       this.log.errorMsgPush(
         "mergeFlag",
         this.config.name,
-        `merge${this.config.branch}失败`
+        `merge ${this.config.branch} 失败`
       );
       return {
         name: this.config.name,
-        msg: `merge${this.config.branch}失败`,
+        msg: `merge ${this.config.branch} 失败`,
         error,
         stdout,
       };
