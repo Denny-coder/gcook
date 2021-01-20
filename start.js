@@ -48,7 +48,6 @@ program
   .option("-b --batch", "是否来自批量操作", false)
   .description("beta 版本发布。。。")
   .action(async (data) => {
-    console.log(data.batch)
     if (data.batch) {
       require(res("gcook.js"))("beta");
     } else {

@@ -73,12 +73,12 @@ const hasCodeChanges = async function () {
           stdout.includes("Changes not staged for commit") ||
           stdout.includes("Changes to be committed")
         ) {
-          console.log(stdout)
+          console.log(stdout);
           resolve(false);
         }
         resolve(true);
-      }else{
-        console.log(error)
+      } else {
+        console.log(error);
         resolve(false);
       }
     });
@@ -137,12 +137,13 @@ const intercept = async function ({ master, batch }) {
   // 来自批量的不需要走以下流程
   if (!batch) {
     hasCodeChangesFlag = await hasCodeChanges();
-    // 更新远程分支
-    judgeChangeCurrentFlag = await pull();
-    if (master) {
-      // 更新远程master
-      judgeChangeMasterFlag = await judgeChangeMaster("master");
-      // judgeChangeMasterFlag = await judgeChangeMaster("master");
+    if (hasCodeChangesFlag) {
+      // 更新远程分支
+      judgeChangeCurrentFlag = await pull();
+      if (master && judgeChangeCurrentFlag) {
+        // 更新远程master
+        judgeChangeMasterFlag = await judgeChangeMaster("master");
+      }
     }
   }
   return (
