@@ -73,11 +73,14 @@ const hasCodeChanges = async function () {
           stdout.includes("Changes not staged for commit") ||
           stdout.includes("Changes to be committed")
         ) {
+          console.log(stdout)
           resolve(false);
         }
         resolve(true);
+      }else{
+        console.log(error)
+        resolve(false);
       }
-      resolve(false);
     });
   });
 };
@@ -105,15 +108,17 @@ const pull = function (branch) {
           resolve(true);
         }
         resolve(false);
+      } else {
+        console.log(error);
+        resolve(false);
       }
-      resolve(false);
     });
   });
 };
 const judgeChangeMaster = async function (branch) {
   const [noChangeMaster, error, stdout] = await diff(branch);
   if (!noChangeMaster) {
-    const [pullFlag] = await pull(branch);
+    const pullFlag = await pull(branch);
     if (!pullFlag) {
       console.error(`拉取远程${branch}失败`);
     }
@@ -140,13 +145,6 @@ const intercept = async function ({ master, batch }) {
       // judgeChangeMasterFlag = await judgeChangeMaster("master");
     }
   }
-  console.log(
-    gcookUpdateFlag,
-    cookUpdateFlag,
-    hasCodeChangesFlag,
-    judgeChangeCurrentFlag,
-    judgeChangeMasterFlag
-  );
   return (
     gcookUpdateFlag &&
     cookUpdateFlag &&
